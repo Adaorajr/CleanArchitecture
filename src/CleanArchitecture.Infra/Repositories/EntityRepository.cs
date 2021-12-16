@@ -66,16 +66,8 @@ namespace CleanArchitecture.Infra.Repositories
 
         public virtual async Task<TEntity> Update(TEntity entity)
         {
-            try
-            {
-                var x = _dbSet.Update(entity);
-                await _context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                var erro = ex.Message;
-
-            }
+            var x = _dbSet.Update(entity);
+            await _context.SaveChangesAsync();
 
             return entity;
         }
