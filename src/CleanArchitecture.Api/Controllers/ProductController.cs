@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using CleanArchitecture.Domain.DTOs;
 using CleanArchitecture.Domain.InputModels;
 using CleanArchitecture.Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +23,7 @@ namespace CleanArchitecture.Api.Controllers
 
         [HttpGet]
         [Route("Products")]
-        public async Task<IActionResult> GetAllProducts()
+        public async Task<IActionResult> GetProducts()
         {
             if (_memoryCache.TryGetValue(PRODUCTS_KEY, out object productsObject))
             {
@@ -51,12 +52,21 @@ namespace CleanArchitecture.Api.Controllers
             }
         }
 
+        [HttpGet]
+        [Route("Products/{id:Guid}")]
+        public async Task<IActionResult> GetProducts(Guid id)
+        {
+            return Ok(await _productService.GetProductById(id));
+        }
+
         [HttpPost]
         [Route("CreateProduct")]
         public async Task<IActionResult> CreateProduct([FromBody] ProductCreateInputModel productCreateInputModel)
         {
             var result = await _productService.CreateProduct(productCreateInputModel);
-            return Ok(result);
+            var dto = result.Data as ProductCreatedDTO;
+
+            return CreatedAtAction(nameof(GetProducts), new { id = dto.Id }, dto);
         }
 
         [HttpPost]
