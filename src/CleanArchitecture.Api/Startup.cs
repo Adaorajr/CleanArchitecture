@@ -28,9 +28,7 @@ namespace CleanArchitecture.Api
 
             services.AddControllers();
             services.AddMvc(options => options.Filters.Add(typeof(ModelStateValidatorFilter)));
-            // services.AddMvc(options => options.Filters.Add(typeof(CustomExceptionFilter)));
             services.AddFluentValidation(f => f.RegisterValidatorsFromAssemblyContaining<Startup>());
-            services.AddTransient<ExceptionHandlingMiddleware>();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "CleanArchitecture.Api", Version = "v1" });
@@ -39,6 +37,7 @@ namespace CleanArchitecture.Api
             services.AddDbContext<AppDataContext>(options =>
             options.UseSqlite(Configuration.GetConnectionString("SqliteConString")));
 
+            services.AddMemoryCache();
             // DEPENDECY INJECTION RESOLVER
             services.DependenciesResolvers();
         }

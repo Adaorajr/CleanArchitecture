@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using CleanArchitecture.Domain.InputModels;
 using CleanArchitecture.Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 
 namespace CleanArchitecture.Api.Controllers
 {
@@ -11,24 +12,42 @@ namespace CleanArchitecture.Api.Controllers
     public class ProductController : ControllerBase
     {
         private readonly IProductService _productService;
-        public ProductController(IProductService productService)
+        private readonly IMemoryCache _memoryCache;
+        private const string PRODUCTS_KEY = "Products";
+        public ProductController(IProductService productService, IMemoryCache memoryCache)
         {
             _productService = productService;
+            _memoryCache = memoryCache;
         }
 
         [HttpGet]
         [Route("Products")]
         public async Task<IActionResult> GetAllProducts()
         {
-            var result = await _productService.GetAllProducts();
-
-            if (result.Count > 0)
+            if (_memoryCache.TryGetValue(PRODUCTS_KEY, out object productsObject))
             {
-                return Ok(result);
+                return Ok(productsObject);
             }
             else
             {
-                return NoContent();
+                var products = await _productService.GetAllProducts();
+
+                if (products.Count > 0)
+                {
+                    var memoryCacheEntryOptions = new MemoryCacheEntryOptions
+                    {
+                        AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1),
+                        SlidingExpiration = TimeSpan.FromMinutes(20)
+                    };
+
+                    _memoryCache.Set(PRODUCTS_KEY, products, memoryCacheEntryOptions);
+
+                    return Ok(products);
+                }
+                else
+                {
+                    return NoContent();
+                }
             }
         }
 

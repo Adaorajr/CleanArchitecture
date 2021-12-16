@@ -1,3 +1,4 @@
+using CleanArchitecture.Api.Middleware;
 using CleanArchitecture.Domain.Interfaces.Repositories;
 using CleanArchitecture.Domain.Interfaces.Services;
 using CleanArchitecture.Domain.Services;
@@ -23,6 +24,10 @@ namespace CleanArchitecture.Api.Configurations
 
             #region Repositories
             services.AddScoped<IProductRepository, ProductRepository>();
+            #endregion
+
+            #region Middleware
+            services.AddTransient<ExceptionHandlingMiddleware>();
             #endregion
         }
     }

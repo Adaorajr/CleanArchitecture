@@ -74,7 +74,7 @@ namespace CleanArchitecture.Domain.Services
 
             var result = await _productRepository.Update(product);
 
-            return new GenericCommandResult(true, "Product was updated successfully!", result);
+            return new GenericCommandResult(true, "Product was successfully updated!", result);
         }
     }
 }
