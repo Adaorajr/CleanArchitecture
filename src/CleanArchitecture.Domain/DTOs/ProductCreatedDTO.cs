@@ -2,9 +2,13 @@ using System;
 
 namespace CleanArchitecture.Domain.DTOs
 {
-    public class ProductListDTO
+    public class ProductCreatedDTO
     {
-        public ProductListDTO(Guid id, string name, string brand, decimal price, DateTime createdAt, DateTime? updatedAt)
+        public ProductCreatedDTO()
+        {
+        }
+
+        public ProductCreatedDTO(Guid id, string name, string brand, decimal price, DateTime createdAt, DateTime? updatedAt)
         {
             Id = id;
             Name = name;

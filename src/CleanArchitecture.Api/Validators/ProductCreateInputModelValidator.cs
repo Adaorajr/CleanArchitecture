@@ -15,13 +15,13 @@ namespace CleanArchitecture.Api.Validators
             .NotNull()
             .WithMessage("The name can't be null or empty!");
 
-            // RuleFor(p => p.Brand)
-            // .MinimumLength(2)
-            // .MaximumLength(50)
-            // .WithMessage("The brand must be between 2 and 50 caracters!")
-            // .NotEmpty()
-            // .NotNull()
-            // .WithMessage("The brand can't be null or empty!");
+            RuleFor(p => p.Brand)
+            .MinimumLength(2)
+            .MaximumLength(50)
+            .WithMessage("The brand must be between 2 and 50 caracters!")
+            .NotEmpty()
+            .NotNull()
+            .WithMessage("The brand can't be null or empty!");
 
             RuleFor(p => p.Price)
             .NotNull()
