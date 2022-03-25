@@ -12,9 +12,11 @@ namespace CleanArchitecture.Domain.Handlers.Product
     public class UpdateProductHandler : IRequestHandler<UpdateProductCommand, GenericCommandResult>
     {
         private readonly IProductRepository _productRepository;
-        public UpdateProductHandler(IProductRepository productRepository)
+        private readonly IUnitOfWork _uow;
+        public UpdateProductHandler(IProductRepository productRepository, IUnitOfWork uow)
         {
             _productRepository = productRepository;
+            _uow = uow;
         }
         public async Task<GenericCommandResult> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
         {
@@ -38,6 +40,7 @@ namespace CleanArchitecture.Domain.Handlers.Product
             try
             {
                 var result = await _productRepository.Update(product);
+                await _uow.Commit();
                 return new GenericCommandResult(true, "Product successfully updated!", result);
             }
             catch (Exception ex)

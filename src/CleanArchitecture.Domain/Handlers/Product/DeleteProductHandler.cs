@@ -11,9 +11,11 @@ namespace CleanArchitecture.Domain.Handlers.Product
     public class DeleteProductHandler : IRequestHandler<DeleteProductCommand, GenericCommandResult>
     {
         private readonly IProductRepository _productRepository;
-        public DeleteProductHandler(IProductRepository productRepository)
+        private readonly IUnitOfWork _uow;
+        public DeleteProductHandler(IProductRepository productRepository, IUnitOfWork uow)
         {
             _productRepository = productRepository;
+            _uow = uow;
         }
 
         public async Task<GenericCommandResult> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
@@ -27,6 +29,8 @@ namespace CleanArchitecture.Domain.Handlers.Product
             }
 
             await _productRepository.Delete(product);
+            await _uow.Commit();
+
             return new GenericCommandResult(true, "Deleted successfully");
         }
     }

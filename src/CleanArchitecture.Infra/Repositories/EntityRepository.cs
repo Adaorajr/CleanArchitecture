@@ -22,30 +22,25 @@ namespace CleanArchitecture.Infra.Repositories
         }
         public virtual async Task<TEntity> Create(TEntity entity)
         {
-            _dbSet.Add(entity);
-            await _context.SaveChangesAsync();
-
+            await Task.FromResult(_dbSet.Add(entity));
             return entity;
         }
 
         public virtual async Task<IEnumerable<TEntity>> CreateRange(IEnumerable<TEntity> entity)
         {
             _dbSet.AddRange(entity);
-            await _context.SaveChangesAsync();
-
-            return entity;
+            return await Task.FromResult(entity);
         }
 
         public virtual async Task Delete(TEntity entity)
         {
-            _dbSet.Remove(entity);
-            await _context.SaveChangesAsync();
+            await Task.FromResult(_dbSet.Remove(entity));
         }
 
         public virtual async Task DeleteAll(IEnumerable<TEntity> entities)
         {
             _dbSet.RemoveRange(entities);
-            await _context.SaveChangesAsync();
+            await Task.CompletedTask;
         }
 
         public virtual async Task<IEnumerable<TEntity>> GetAll()
@@ -66,18 +61,14 @@ namespace CleanArchitecture.Infra.Repositories
 
         public virtual async Task<TEntity> Update(TEntity entity)
         {
-            var x = _dbSet.Update(entity);
-            await _context.SaveChangesAsync();
-
+            await Task.FromResult(_dbSet.Update(entity));
             return entity;
         }
 
         public virtual async Task<IEnumerable<TEntity>> UpdateRange(IEnumerable<TEntity> entities)
         {
             _dbSet.UpdateRange(entities);
-            await _context.SaveChangesAsync();
-
-            return entities;
+            return await Task.FromResult(entities);
         }
     }
 }

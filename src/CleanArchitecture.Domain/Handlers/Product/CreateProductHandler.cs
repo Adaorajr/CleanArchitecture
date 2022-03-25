@@ -11,9 +11,11 @@ namespace CleanArchitecture.Domain.Handlers.Product
     public class CreateProductHandler : IRequestHandler<CreateProductCommand, GenericCommandResult>
     {
         private readonly IProductRepository _productRepository;
-        public CreateProductHandler(IProductRepository productRepository)
+        private readonly IUnitOfWork _uow;
+        public CreateProductHandler(IProductRepository productRepository, IUnitOfWork uow)
         {
             _productRepository = productRepository;
+            _uow = uow;
         }
         public async Task<GenericCommandResult> Handle(CreateProductCommand request, CancellationToken cancellationToken)
         {
@@ -30,9 +32,9 @@ namespace CleanArchitecture.Domain.Handlers.Product
                 DateTime.Now)
             );
 
+            await _uow.Commit();
+
             CreateProductResponse response = product;
-
-
             return new GenericCommandResult(true, "Produto Cadastrado com Sucesso!", response);
         }
     }
