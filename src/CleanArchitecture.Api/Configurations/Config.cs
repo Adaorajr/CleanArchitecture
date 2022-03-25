@@ -1,8 +1,8 @@
+using System;
 using CleanArchitecture.Api.Middleware;
 using CleanArchitecture.Domain.Interfaces.Repositories;
-using CleanArchitecture.Domain.Interfaces.Services;
-using CleanArchitecture.Domain.Services;
 using CleanArchitecture.Infra.Repositories;
+using MediatR;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace CleanArchitecture.Api.Configurations
@@ -19,7 +19,7 @@ namespace CleanArchitecture.Api.Configurations
         private static void DependencyInjection(IServiceCollection services)
         {
             #region Services           
-            services.AddScoped<IProductService, ProductService>();
+
             #endregion
 
             #region Repositories
@@ -28,6 +28,10 @@ namespace CleanArchitecture.Api.Configurations
 
             #region Middleware
             services.AddTransient<ExceptionHandlingMiddleware>();
+            #endregion
+
+            #region Mediator 
+            services.AddMediatR(AppDomain.CurrentDomain.Load("CleanArchitecture.Domain"));
             #endregion
         }
     }

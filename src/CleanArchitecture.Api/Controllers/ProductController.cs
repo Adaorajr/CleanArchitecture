@@ -1,12 +1,10 @@
 using System;
 using System.Threading.Tasks;
-using CleanArchitecture.Domain.DTOs;
-using CleanArchitecture.Domain.InputModels;
-using CleanArchitecture.Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.AspNetCore.JsonPatch;
-using CleanArchitecture.Api.Extensions;
+using MediatR;
+using CleanArchitecture.Domain.Commands.Requests.Product;
+using CleanArchitecture.Domain.Queries.Requests.Product;
 
 namespace CleanArchitecture.Api.Controllers
 {
@@ -14,13 +12,13 @@ namespace CleanArchitecture.Api.Controllers
     [Route("[controller]")]
     public class ProductController : ControllerBase
     {
-        private readonly IProductService _productService;
+        private readonly IMediator _mediator;
         private readonly IMemoryCache _memoryCache;
         private const string PRODUCTS_KEY = "Products";
-        public ProductController(IProductService productService, IMemoryCache memoryCache)
+        public ProductController(IMediator mediator, IMemoryCache memoryCache)
         {
-            _productService = productService;
             _memoryCache = memoryCache;
+            _mediator = mediator;
         }
 
         [HttpGet]
@@ -32,24 +30,17 @@ namespace CleanArchitecture.Api.Controllers
             }
             else
             {
-                var products = await _productService.GetAllProducts();
+                var products = await _mediator.Send(new GetAllProductsQuery());
 
-                if (products.Count > 0)
+                var memoryCacheEntryOptions = new MemoryCacheEntryOptions
                 {
-                    var memoryCacheEntryOptions = new MemoryCacheEntryOptions
-                    {
-                        AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1),
-                        SlidingExpiration = TimeSpan.FromMinutes(20)
-                    };
+                    AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(1),
+                    SlidingExpiration = TimeSpan.FromMinutes(20)
+                };
 
-                    _memoryCache.Set(PRODUCTS_KEY, products, memoryCacheEntryOptions);
+                _memoryCache.Set(PRODUCTS_KEY, products, memoryCacheEntryOptions);
 
-                    return Ok(products);
-                }
-                else
-                {
-                    return NoContent();
-                }
+                return Ok(products);
             }
         }
 
@@ -57,42 +48,30 @@ namespace CleanArchitecture.Api.Controllers
         [Route("{id:Guid}")]
         public async Task<IActionResult> Get(Guid id)
         {
-            return Ok(await _productService.GetProductById(id));
+            var result = await _mediator.Send(new GetProductByIdQuery { Id = id });
+            return Ok(result);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] ProductCreateInputModel productCreateInputModel)
+        public async Task<IActionResult> Create([FromBody] CreateProductCommand command)
         {
-            var result = await _productService.CreateProduct(productCreateInputModel);
-            var dto = result.Data as ProductCreatedDTO;
-
-            return CreatedAtAction(nameof(Get), new { id = dto.Id }, dto);
+            var result = await _mediator.Send(command);
+            return CreatedAtAction(nameof(Get), new { id = result.Id }, result);
         }
 
-        [HttpPost]
+        [HttpDelete]
         [Route("{id:Guid}")]
         public async Task<IActionResult> Delete(Guid id)
         {
-            var result = await _productService.DeleteProduct(id);
-            return Ok(result);
+            var result = await _mediator.Send(new DeleteProductCommand { Id = id });
+            return NoContent();
         }
 
         [HttpPut]
-        [Route("{id:Guid}")]
-        public async Task<IActionResult> Update(Guid id, [FromBody] ProductUpdateInputModel productUpdateInputModel)
+        public async Task<IActionResult> Update([FromBody] UpdateProductCommand command)
         {
-            var result = await _productService.UpdateProduct(id, productUpdateInputModel);
-
-            return Ok(result);
-        }
-
-        [HttpPatch]
-        [Route("{id:Guid}")]
-        public async Task<IActionResult> Patch(Guid id, [FromBody] JsonPatchDocument<ProductUpdateInputModel> productUpdateInputModel)
-        {
-            var result = await _productService.PatchProduct(id, productUpdateInputModel);
-
-            return Ok(result);
+            var result = await _mediator.Send(command);
+            return NoContent();
         }
     }
 }

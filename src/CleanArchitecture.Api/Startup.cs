@@ -1,7 +1,6 @@
 using CleanArchitecture.Api.Configurations;
 using CleanArchitecture.Api.Filters;
 using CleanArchitecture.Api.Middleware;
-using CleanArchitecture.Domain.AutoMapper;
 using CleanArchitecture.Infra.Context;
 using FluentValidation.AspNetCore;
 using Microsoft.AspNetCore.Builder;
@@ -26,7 +25,6 @@ namespace CleanArchitecture.Api
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddAutoMapper(typeof(MappingProfile));
             services.AddControllers().ConfigureApiBehaviorOptions(options =>
             {
                 options.SuppressModelStateInvalidFilter = true;
@@ -34,6 +32,7 @@ namespace CleanArchitecture.Api
             .AddNewtonsoftJson();
             services.AddMvc(options => options.Filters.Add(typeof(ModelStateValidatorFilter)));
             services.AddFluentValidation(f => f.RegisterValidatorsFromAssemblyContaining<Startup>());
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc(
