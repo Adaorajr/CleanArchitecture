@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using CleanArchitecture.Domain.DTOs;
 using CleanArchitecture.Domain.Entities;
 using CleanArchitecture.Domain.Exceptions;
@@ -9,15 +10,18 @@ using CleanArchitecture.Domain.InputModels;
 using CleanArchitecture.Domain.Interfaces.Repositories;
 using CleanArchitecture.Domain.Interfaces.Services;
 using CleanArchitecture.Domain.Response;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace CleanArchitecture.Domain.Services
 {
     public class ProductService : IProductService
     {
         private readonly IProductRepository _productRepository;
-        public ProductService(IProductRepository productRepository)
+        private readonly IMapper _mapper;
+        public ProductService(IProductRepository productRepository, IMapper mapper)
         {
             _productRepository = productRepository;
+            _mapper = mapper;
         }
 
         public async Task<List<ProductListDTO>> GetAllProducts()
@@ -84,7 +88,7 @@ namespace CleanArchitecture.Domain.Services
             }
 
             await _productRepository.Delete(product);
-            return new GenericCommandResult(true, "Product was deleted successfully", product);
+            return new GenericCommandResult(true, "Product was successfully deleted!", product);
         }
 
         public async Task<GenericCommandResult> UpdateProduct(Guid id, ProductUpdateInputModel productUpdateInputModel)
@@ -110,6 +114,25 @@ namespace CleanArchitecture.Domain.Services
             {
                 throw new DomainUnprocessableEntityException(ex.Message);
             }
+        }
+
+        public async Task<GenericCommandResult> PatchProduct(Guid id, JsonPatchDocument<ProductUpdateInputModel> productUpdateInputModel)
+        {
+            var product = await _productRepository.GetById(id);
+
+            if (product is null)
+            {
+                throw new DomainNotFoundException("This product does not exist!");
+            }
+
+            var productModel = _mapper.Map<ProductUpdateInputModel>(product);
+
+            productUpdateInputModel.ApplyTo(productModel);
+            _mapper.Map(productModel, product);
+
+            var result = await _productRepository.Update(product);
+
+            return new GenericCommandResult(true, "Product was successfully updated!", result);
         }
     }
 }

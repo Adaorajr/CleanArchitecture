@@ -5,6 +5,8 @@ using CleanArchitecture.Domain.InputModels;
 using CleanArchitecture.Domain.Interfaces.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.AspNetCore.JsonPatch;
+using CleanArchitecture.Api.Extensions;
 
 namespace CleanArchitecture.Api.Controllers
 {
@@ -22,8 +24,7 @@ namespace CleanArchitecture.Api.Controllers
         }
 
         [HttpGet]
-        [Route("Products")]
-        public async Task<IActionResult> GetProducts()
+        public async Task<IActionResult> Get()
         {
             if (_memoryCache.TryGetValue(PRODUCTS_KEY, out object productsObject))
             {
@@ -53,35 +54,43 @@ namespace CleanArchitecture.Api.Controllers
         }
 
         [HttpGet]
-        [Route("Products/{id:Guid}")]
-        public async Task<IActionResult> GetProducts(Guid id)
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> Get(Guid id)
         {
             return Ok(await _productService.GetProductById(id));
         }
 
         [HttpPost]
-        [Route("CreateProduct")]
-        public async Task<IActionResult> CreateProduct([FromBody] ProductCreateInputModel productCreateInputModel)
+        public async Task<IActionResult> Create([FromBody] ProductCreateInputModel productCreateInputModel)
         {
             var result = await _productService.CreateProduct(productCreateInputModel);
             var dto = result.Data as ProductCreatedDTO;
 
-            return CreatedAtAction(nameof(GetProducts), new { id = dto.Id }, dto);
+            return CreatedAtAction(nameof(Get), new { id = dto.Id }, dto);
         }
 
         [HttpPost]
-        [Route("DeleteProduct")]
-        public async Task<IActionResult> DeleteProduct([FromQuery] Guid productId)
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> Delete(Guid id)
         {
-            var result = await _productService.DeleteProduct(productId);
+            var result = await _productService.DeleteProduct(id);
             return Ok(result);
         }
 
         [HttpPut]
-        [Route("UpdateProduct")]
-        public async Task<IActionResult> UpdateProduct([FromQuery] Guid id, [FromBody] ProductUpdateInputModel productUpdateInputModel)
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> Update(Guid id, [FromBody] ProductUpdateInputModel productUpdateInputModel)
         {
             var result = await _productService.UpdateProduct(id, productUpdateInputModel);
+
+            return Ok(result);
+        }
+
+        [HttpPatch]
+        [Route("{id:Guid}")]
+        public async Task<IActionResult> Patch(Guid id, [FromBody] JsonPatchDocument<ProductUpdateInputModel> productUpdateInputModel)
+        {
+            var result = await _productService.PatchProduct(id, productUpdateInputModel);
 
             return Ok(result);
         }

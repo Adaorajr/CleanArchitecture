@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using CleanArchitecture.Domain.DTOs;
 using CleanArchitecture.Domain.InputModels;
 using CleanArchitecture.Domain.Response;
+using Microsoft.AspNetCore.JsonPatch;
 
 namespace CleanArchitecture.Domain.Interfaces.Services
 {
@@ -14,5 +15,6 @@ namespace CleanArchitecture.Domain.Interfaces.Services
         Task<GenericCommandResult> CreateProduct(ProductCreateInputModel productCreateInputModel);
         Task<GenericCommandResult> DeleteProduct(Guid productId);
         Task<GenericCommandResult> UpdateProduct(Guid id, ProductUpdateInputModel productUpdateInputModel);
+        Task<GenericCommandResult> PatchProduct(Guid id, JsonPatchDocument<ProductUpdateInputModel> productUpdateInputModel);
     }
 }

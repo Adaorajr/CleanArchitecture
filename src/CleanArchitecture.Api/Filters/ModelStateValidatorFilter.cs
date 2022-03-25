@@ -16,7 +16,7 @@ namespace CleanArchitecture.Api.Filters
             if (!context.ModelState.IsValid)
             {
                 var errors = context.ModelState.GetErrorsMessages();
-                context.Result = new BadRequestObjectResult(errors);
+                context.Result = new BadRequestObjectResult(context.ModelState);
             }
         }
     }

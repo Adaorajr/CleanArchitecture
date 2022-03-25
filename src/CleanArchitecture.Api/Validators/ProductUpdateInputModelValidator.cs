@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace CleanArchitecture.Api.Validators
 {
-    public class ProductCreateInputModelValidator : AbstractValidator<ProductCreateInputModel>
+    public class ProductUpdateInputModelValidator : AbstractValidator<ProductUpdateInputModel>
     {
-        public ProductCreateInputModelValidator()
+        public ProductUpdateInputModelValidator()
         {
             RuleFor(p => p.Name)
             .Length(5, 100)
@@ -13,16 +13,13 @@ namespace CleanArchitecture.Api.Validators
             .NotEmpty()
             .WithMessage("The name can't be null or empty!");
 
-            // RuleFor(p => p.Brand)
-            // .MinimumLength(2)
-            // .MaximumLength(50)
-            // .WithMessage("The brand must be between 2 and 50 caracters!")
-            // .NotEmpty()
-            // .NotNull()
-            // .WithMessage("The brand can't be null or empty!");
+            RuleFor(p => p.Brand)
+            .Length(2, 50)
+            .WithMessage("The brand must be between 2 and 50 caracters!")
+            .NotEmpty()
+            .WithMessage("The brand can't be null or empty!");
 
             RuleFor(p => p.Price)
-            .NotNull()
             .NotEmpty()
             .WithMessage("The price can't be null or empty!");
         }
