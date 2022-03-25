@@ -4,24 +4,30 @@ using System.Threading.Tasks;
 using CleanArchitecture.Domain.Commands.Requests.Product;
 using CleanArchitecture.Domain.Exceptions;
 using CleanArchitecture.Domain.Interfaces.Repositories;
+using CleanArchitecture.Domain.Response;
 using MediatR;
 
 namespace CleanArchitecture.Domain.Handlers.Product
 {
-    public class UpdateProductHandler : IRequestHandler<UpdateProductCommand, bool>
+    public class UpdateProductHandler : IRequestHandler<UpdateProductCommand, GenericCommandResult>
     {
         private readonly IProductRepository _productRepository;
         public UpdateProductHandler(IProductRepository productRepository)
         {
             _productRepository = productRepository;
         }
-        public async Task<bool> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
+        public async Task<GenericCommandResult> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
         {
+            request.Validate();
+            if (!request.IsValid)
+                return new GenericCommandResult(false, "Check, please:", request.Notifications);
+
             var product = await _productRepository.GetById(request.Id);
 
             if (product is null)
             {
-                throw new DomainNotFoundException("This product does not exist!");
+                request.AddNotification("Error", "This product does not exist!");
+                return new GenericCommandResult(false, "Please, check:", request.Notifications);
             }
 
             product.Name = request.Name;
@@ -32,7 +38,7 @@ namespace CleanArchitecture.Domain.Handlers.Product
             try
             {
                 var result = await _productRepository.Update(product);
-                return true;
+                return new GenericCommandResult(true, "Product successfully updated!", result);
             }
             catch (Exception ex)
             {
@@ -40,5 +46,4 @@ namespace CleanArchitecture.Domain.Handlers.Product
             }
         }
     }
-
 }

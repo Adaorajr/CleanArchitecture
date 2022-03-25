@@ -7,20 +7,21 @@
 	</PropertyGroup>
 	<ItemGroup>
 		<!-- <PackageReference Include="AutoMapper" Version="10.1.1" /> -->
-		<PackageReference Include="FluentValidation.AspNetCore" Version="10.3.6"/>
-		<PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1"/>
-		<PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="6.0.1"/>
-		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5"/>
-		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5"/>
+		<PackageReference Include="FluentValidation.AspNetCore" Version="10.3.6" />
+		<PackageReference Include="Flunt" Version="2.0.5" />
+		<PackageReference Include="MediatR.Extensions.Microsoft.DependencyInjection" Version="10.0.1" />
+		<PackageReference Include="Microsoft.AspNetCore.JsonPatch" Version="6.0.1" />
+		<PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="5" />
+		<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5" />
 		<PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5">
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 			<PrivateAssets>all</PrivateAssets>
 		</PackageReference>
-		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.11.1"/>
-		<PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3"/>
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.11.1" />
+		<PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
 	</ItemGroup>
 	<ItemGroup>
-		<ProjectReference Include="..\CleanArchitecture.Domain\CleanArchitecture.Domain.csproj"/>
-		<ProjectReference Include="..\CleanArchitecture.Infra\CleanArchitecture.Infra.csproj"/>
+		<ProjectReference Include="..\CleanArchitecture.Domain\CleanArchitecture.Domain.csproj" />
+		<ProjectReference Include="..\CleanArchitecture.Infra\CleanArchitecture.Infra.csproj" />
 	</ItemGroup>
 </Project>

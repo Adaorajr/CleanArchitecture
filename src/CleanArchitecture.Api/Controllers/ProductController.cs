@@ -49,14 +49,22 @@ namespace CleanArchitecture.Api.Controllers
         public async Task<IActionResult> Get(Guid id)
         {
             var result = await _mediator.Send(new GetProductByIdQuery { Id = id });
-            return Ok(result);
+
+            if (!result.Success)
+                return NotFound(result);
+            return Ok(result.Data);
         }
 
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateProductCommand command)
         {
             var result = await _mediator.Send(command);
-            return CreatedAtAction(nameof(Get), new { id = result.Id }, result);
+            if (!result.Success)
+                return BadRequest(result);
+
+            var prod = result.Data as CreateProductResponse;
+
+            return CreatedAtAction(nameof(Get), new { id = prod.Id }, prod);
         }
 
         [HttpDelete]
@@ -64,6 +72,9 @@ namespace CleanArchitecture.Api.Controllers
         public async Task<IActionResult> Delete(Guid id)
         {
             var result = await _mediator.Send(new DeleteProductCommand { Id = id });
+
+            if (!result.Success)
+                return BadRequest(result);
             return NoContent();
         }
 
@@ -71,6 +82,9 @@ namespace CleanArchitecture.Api.Controllers
         public async Task<IActionResult> Update([FromBody] UpdateProductCommand command)
         {
             var result = await _mediator.Send(command);
+            if (!result.Success)
+                return BadRequest(result);
+
             return NoContent();
         }
     }

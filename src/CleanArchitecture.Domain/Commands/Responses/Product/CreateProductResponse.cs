@@ -10,5 +10,18 @@ namespace CleanArchitecture.Domain.Commands.Requests.Product
         public Decimal Price { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+
+        public static implicit operator CreateProductResponse(Entities.Product product)
+        {
+            return new CreateProductResponse
+            {
+                Id = product.Id,
+                Name = product.Name,
+                Brand = product.Brand,
+                Price = product.Price,
+                CreatedAt = product.CreatedAt,
+            };
+
+        }
     }
 }
