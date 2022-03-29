@@ -22,7 +22,7 @@ namespace CleanArchitecture.Domain.Handlers.Product
         {
             request.Validate();
             if (!request.IsValid)
-                return new GenericCommandResult(false, "Check, please:", request.Notifications);
+                return new GenericCommandResult(false, "Please, check:", request.Notifications);
 
             var product = await _productRepository.GetById(request.Id);
 

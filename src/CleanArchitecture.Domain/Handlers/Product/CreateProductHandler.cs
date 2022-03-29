@@ -22,7 +22,7 @@ namespace CleanArchitecture.Domain.Handlers.Product
             request.Validate();
             if (!request.IsValid)
             {
-                return new GenericCommandResult(false, "Verifique os erros!", request.Notifications);
+                return new GenericCommandResult(false, "Please, check:", request.Notifications);
             }
 
             var product = await _productRepository.Create(new Entities.Product(
@@ -35,7 +35,7 @@ namespace CleanArchitecture.Domain.Handlers.Product
             await _uow.Commit();
 
             CreateProductResponse response = product;
-            return new GenericCommandResult(true, "Produto Cadastrado com Sucesso!", response);
+            return new GenericCommandResult(true, "Product successfully created!", response);
         }
     }
 }

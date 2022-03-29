@@ -23,7 +23,7 @@ namespace CleanArchitecture.Domain.Handlers.Product
             if (result is null)
             {
                 request.AddNotification("Error", "This product does not exist!");
-                return new GenericCommandResult(false, "Please: check:", request.Notifications);
+                return new GenericCommandResult(false, "Please, check:", request.Notifications);
             }
             var response = new GetProductByIdResponse(
                             result.Id,
