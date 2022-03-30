@@ -5,12 +5,14 @@ using Microsoft.Extensions.Caching.Memory;
 using MediatR;
 using CleanArchitecture.Domain.Commands.Requests.Product;
 using CleanArchitecture.Domain.Queries.Requests.Product;
+using System.Collections.Generic;
+using CleanArchitecture.Domain.Queries.Responses.Product;
 
 namespace CleanArchitecture.Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ProductController : ControllerBase
+    public class ProductController : ControllerBase //ApiBaseController
     {
         private readonly IMediator _mediator;
         private readonly IMemoryCache _memoryCache;
@@ -22,7 +24,7 @@ namespace CleanArchitecture.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<ActionResult<List<GetProductByIdResponse>>> Get()
         {
             if (_memoryCache.TryGetValue(PRODUCTS_KEY, out object productsObject))
             {
@@ -39,6 +41,8 @@ namespace CleanArchitecture.Api.Controllers
                 };
 
                 _memoryCache.Set(PRODUCTS_KEY, products, memoryCacheEntryOptions);
+
+                // return Ok(products);
 
                 return Ok(products);
             }

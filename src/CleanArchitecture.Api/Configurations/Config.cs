@@ -24,8 +24,7 @@ namespace CleanArchitecture.Api.Configurations
 
             #region Repositories
             services.AddScoped<IProductRepository, ProductRepository>();
-
-            services.AddTransient<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<ICustomerRepository, CustomerRepository>();
             #endregion
 
             #region Middleware

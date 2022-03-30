@@ -12,8 +12,23 @@ namespace CleanArchitecture.Domain.Entities
             CreatedAt = createdAt;
         }
 
-        public string Name { get; set; }
-        public string Brand { get; set; }
-        public Decimal Price { get; set; }
+        public string Name { get; private set; }
+        public string Brand { get; private set; }
+        public decimal Price { get; private set; }
+
+        public void ChangeName(string name)
+        {
+            Name = name;
+        }
+
+        public void ChangeBrand(string brand)
+        {
+            Brand = brand;
+        }
+
+        public void ChangePrice(decimal price)
+        {
+            Price = price;
+        }
     }
 }

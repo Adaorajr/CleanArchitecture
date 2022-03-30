@@ -11,11 +11,9 @@ namespace CleanArchitecture.Domain.Handlers.Product
     public class CreateProductHandler : IRequestHandler<CreateProductCommand, GenericCommandResult>
     {
         private readonly IProductRepository _productRepository;
-        private readonly IUnitOfWork _uow;
-        public CreateProductHandler(IProductRepository productRepository, IUnitOfWork uow)
+        public CreateProductHandler(IProductRepository productRepository)
         {
             _productRepository = productRepository;
-            _uow = uow;
         }
         public async Task<GenericCommandResult> Handle(CreateProductCommand request, CancellationToken cancellationToken)
         {
@@ -32,7 +30,7 @@ namespace CleanArchitecture.Domain.Handlers.Product
                 DateTime.Now)
             );
 
-            await _uow.Commit();
+            await _productRepository.Commit();
 
             CreateProductResponse response = product;
             return new GenericCommandResult(true, "Product successfully created!", response);
