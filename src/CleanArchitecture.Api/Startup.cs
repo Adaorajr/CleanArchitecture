@@ -37,6 +37,9 @@ namespace CleanArchitecture.Api
             services.AddDbContext<AppDataContext>(options =>
             options.UseSqlite(Configuration.GetConnectionString("SqliteConString")));
 
+            services.AddDbContext<AppDataContextDois>(options =>
+            options.UseSqlite(Configuration.GetConnectionString("SqliteConStringDois")));
+
             services.AddMemoryCache();
             // DEPENDECY INJECTION RESOLVER
             services.DependenciesResolvers();

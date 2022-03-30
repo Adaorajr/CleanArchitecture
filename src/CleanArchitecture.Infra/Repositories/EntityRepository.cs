@@ -10,12 +10,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CleanArchitecture.Infra.Repositories
 {
-    public class EntityRepository<TEntity> : IEntityRepository<TEntity> where TEntity : BaseEntity
+    public class EntityRepository<TEntity, TContext> : IEntityRepository<TEntity>
+        where TEntity : BaseEntity
+        where TContext : DbContext
     {
-        private readonly AppDataContext _context;
+        private readonly TContext _context;
         protected readonly DbSet<TEntity> _dbSet;
 
-        public EntityRepository(AppDataContext context)
+        public EntityRepository(TContext context)
         {
             _context = context;
             _dbSet = context.Set<TEntity>();
@@ -69,6 +71,11 @@ namespace CleanArchitecture.Infra.Repositories
         {
             _dbSet.UpdateRange(entities);
             return await Task.FromResult(entities);
+        }
+
+        public async Task<int> Commit()
+        {
+            return await _context.SaveChangesAsync();
         }
     }
 }

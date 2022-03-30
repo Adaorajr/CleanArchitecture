@@ -7,7 +7,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CleanArchitecture.Domain.Interfaces.Repositories
 {
-    public interface IEntityRepository<TEntity> where TEntity : BaseEntity
+    public interface IEntityRepository<TEntity>
+        where TEntity : BaseEntity
     {
         Task<TEntity> Create(TEntity entity);
         Task<IEnumerable<TEntity>> CreateRange(IEnumerable<TEntity> entity);
@@ -17,5 +18,7 @@ namespace CleanArchitecture.Domain.Interfaces.Repositories
         Task<IEnumerable<TEntity>> GetAll();
         Task Delete(TEntity entity);
         Task DeleteAll(IEnumerable<TEntity> entities);
+
+        Task<int> Commit();
     }
 }

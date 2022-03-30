@@ -5,24 +5,24 @@ using Microsoft.Extensions.Configuration;
 
 namespace CleanArchitecture.Infra.Context
 {
-    public class AppDataContext : DbContext
+    public class AppDataContextDois : DbContext
     {
         public IConfiguration Configuration { get; }
-        public AppDataContext()
+        public AppDataContextDois()
         {
         }
-        public AppDataContext(DbContextOptions<AppDataContext> options, IConfiguration configuration)
+
+        public AppDataContextDois(DbContextOptions<AppDataContextDois> options, IConfiguration configuration)
         : base(options)
         {
             Configuration = configuration;
         }
+
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            var teste = Configuration.GetConnectionString("SqliteConString");
-
             if (!options.IsConfigured)
             {
-                options.UseSqlite(Configuration.GetConnectionString("SqliteConString"));
+                options.UseSqlite(Configuration.GetConnectionString("SqliteConStringDois"));
             }
         }
 
@@ -31,9 +31,9 @@ namespace CleanArchitecture.Infra.Context
             base.OnModelCreating(modelBuilder);
 
             //Mappings
-            new ProductMapping(modelBuilder.Entity<Product>());
+            new CustomerMapping(modelBuilder.Entity<Customer>());
         }
 
-        public DbSet<Product> Produtcs { get; set; }
+        public DbSet<Customer> Customers { get; set; }
     }
 }

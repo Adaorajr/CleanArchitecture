@@ -4,7 +4,7 @@ using CleanArchitecture.Infra.Context;
 
 namespace CleanArchitecture.Infra.Repositories
 {
-    public class ProductRepository : EntityRepository<Product>, IProductRepository
+    public class ProductRepository : EntityRepository<Product, AppDataContext>, IProductRepository
     {
         public ProductRepository(AppDataContext context) : base(context)
         {
