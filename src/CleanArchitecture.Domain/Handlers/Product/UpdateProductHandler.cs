@@ -1,20 +1,20 @@
+using CleanArchitecture.Domain.Commands.Requests.Product;
+using CleanArchitecture.Domain.Exceptions;
+using CleanArchitecture.Domain.Interfaces.Repositories.Context;
+using CleanArchitecture.Domain.Response;
+using MediatR;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using CleanArchitecture.Domain.Commands.Requests.Product;
-using CleanArchitecture.Domain.Exceptions;
-using CleanArchitecture.Domain.Interfaces.Repositories;
-using CleanArchitecture.Domain.Response;
-using MediatR;
 
 namespace CleanArchitecture.Domain.Handlers.Product
 {
     public class UpdateProductHandler : IRequestHandler<UpdateProductCommand, GenericCommandResult>
     {
-        private readonly IProductRepository _productRepository;
-        public UpdateProductHandler(IProductRepository productRepository)
+        private readonly IUnitOfWorkContext _uow;
+        public UpdateProductHandler(IUnitOfWorkContext uow)
         {
-            _productRepository = productRepository;
+            _uow = uow;
         }
         public async Task<GenericCommandResult> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
         {
@@ -22,7 +22,7 @@ namespace CleanArchitecture.Domain.Handlers.Product
             if (!request.IsValid)
                 return new GenericCommandResult(false, "Please, check:", request.Notifications);
 
-            var product = await _productRepository.GetById(request.Id);
+            var product = await _uow.ProductRepository.GetById(request.Id);
 
             if (product is null)
             {
@@ -37,8 +37,8 @@ namespace CleanArchitecture.Domain.Handlers.Product
 
             try
             {
-                var result = await _productRepository.Update(product);
-                await _productRepository.Commit();
+                var result = await _uow.ProductRepository.Update(product);
+                await _uow.ProductRepository.Commit();
                 return new GenericCommandResult(true, "Product successfully updated!", result);
             }
             catch (Exception ex)

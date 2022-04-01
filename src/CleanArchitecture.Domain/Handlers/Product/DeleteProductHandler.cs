@@ -1,24 +1,23 @@
-using System.Threading;
-using System.Threading.Tasks;
 using CleanArchitecture.Domain.Commands.Requests.Product;
-using CleanArchitecture.Domain.Exceptions;
-using CleanArchitecture.Domain.Interfaces.Repositories;
+using CleanArchitecture.Domain.Interfaces.Repositories.Context;
 using CleanArchitecture.Domain.Response;
 using MediatR;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace CleanArchitecture.Domain.Handlers.Product
 {
     public class DeleteProductHandler : IRequestHandler<DeleteProductCommand, GenericCommandResult>
     {
-        private readonly IProductRepository _productRepository;
-        public DeleteProductHandler(IProductRepository productRepository)
+        private readonly IUnitOfWorkContext _uow;
+        public DeleteProductHandler(IUnitOfWorkContext uow)
         {
-            _productRepository = productRepository;
+            _uow = uow;
         }
 
         public async Task<GenericCommandResult> Handle(DeleteProductCommand request, CancellationToken cancellationToken)
         {
-            var product = await _productRepository.GetById(request.Id);
+            var product = await _uow.ProductRepository.GetById(request.Id);
 
             if (product is null)
             {
@@ -26,8 +25,8 @@ namespace CleanArchitecture.Domain.Handlers.Product
                 return new GenericCommandResult(false, "Please, check:", request.Notifications);
             }
 
-            await _productRepository.Delete(product);
-            await _productRepository.Commit();
+            await _uow.ProductRepository.Delete(product);
+            await _uow.Commit();
 
             return new GenericCommandResult(true, "Deleted successfully");
         }

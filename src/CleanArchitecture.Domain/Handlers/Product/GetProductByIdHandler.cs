@@ -2,6 +2,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using CleanArchitecture.Domain.Exceptions;
 using CleanArchitecture.Domain.Interfaces.Repositories;
+using CleanArchitecture.Domain.Interfaces.Repositories.Context;
 using CleanArchitecture.Domain.Queries.Requests.Product;
 using CleanArchitecture.Domain.Queries.Responses.Product;
 using CleanArchitecture.Domain.Response;
@@ -11,14 +12,14 @@ namespace CleanArchitecture.Domain.Handlers.Product
 {
     public class GetProductByIdHandler : IRequestHandler<GetProductByIdQuery, GenericCommandResult>
     {
-        private readonly IProductRepository _productRepository;
-        public GetProductByIdHandler(IProductRepository productRepository)
+        private readonly IUnitOfWorkContext _uow;
+        public GetProductByIdHandler(IUnitOfWorkContext uow)
         {
-            _productRepository = productRepository;
+            _uow = uow;
         }
         public async Task<GenericCommandResult> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
         {
-            var result = await _productRepository.GetById(request.Id);
+            var result = await _uow.ProductRepository.GetById(request.Id);
 
             if (result is null)
             {

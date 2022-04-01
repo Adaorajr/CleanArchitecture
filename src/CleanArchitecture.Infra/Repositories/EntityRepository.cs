@@ -36,7 +36,8 @@ namespace CleanArchitecture.Infra.Repositories
 
         public virtual async Task Delete(TEntity entity)
         {
-            await Task.FromResult(_dbSet.Remove(entity));
+            _dbSet.Remove(entity);
+            await Task.CompletedTask;
         }
 
         public virtual async Task DeleteAll(IEnumerable<TEntity> entities)
@@ -71,11 +72,6 @@ namespace CleanArchitecture.Infra.Repositories
         {
             _dbSet.UpdateRange(entities);
             return await Task.FromResult(entities);
-        }
-
-        public async Task<int> Commit()
-        {
-            return await _context.SaveChangesAsync();
         }
     }
 }

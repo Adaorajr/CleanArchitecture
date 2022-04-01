@@ -18,7 +18,5 @@ namespace CleanArchitecture.Domain.Interfaces.Repositories
         Task<IEnumerable<TEntity>> GetAll();
         Task Delete(TEntity entity);
         Task DeleteAll(IEnumerable<TEntity> entities);
-
-        Task<int> Commit();
     }
 }

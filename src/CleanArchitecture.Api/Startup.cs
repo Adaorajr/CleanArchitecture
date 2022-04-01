@@ -41,6 +41,7 @@ namespace CleanArchitecture.Api
             options.UseSqlite(Configuration.GetConnectionString("SqliteConStringDois")));
 
             services.AddMemoryCache();
+
             // DEPENDECY INJECTION RESOLVER
             services.DependenciesResolvers();
         }
