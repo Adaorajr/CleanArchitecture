@@ -42,8 +42,6 @@ namespace CleanArchitecture.Api.Controllers
 
                 _memoryCache.Set(PRODUCTS_KEY, products, memoryCacheEntryOptions);
 
-                // return Ok(products);
-
                 return Ok(products);
             }
         }

@@ -38,7 +38,7 @@ namespace CleanArchitecture.Domain.Handlers.Product
             try
             {
                 var result = await _uow.ProductRepository.Update(product);
-                await _uow.ProductRepository.Commit();
+                await _uow.Commit();
                 return new GenericCommandResult(true, "Product successfully updated!", result);
             }
             catch (Exception ex)
