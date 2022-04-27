@@ -1,41 +1,51 @@
 ﻿using CleanArchitecture.Domain.Commands.Requests.Customer;
 using CleanArchitecture.Domain.Commands.Responses.Customer;
-using CleanArchitecture.Domain.Queries.Requests.Customer;
+using CleanArchitecture.Domain.Commons;
+using CleanArchitecture.Domain.DTO.Customer;
+using CleanArchitecture.Domain.Interfaces.Queries;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace CleanArchitecture.Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class CustomerController : ControllerBase
+    public class CustomerController : ApiBaseController
     {
+        private readonly ICustomerQueries _customerQueries;
         private readonly IMediator _mediator;
-        public CustomerController(IMediator mediator)
+        public CustomerController(
+            ICustomerQueries customerQueries
+            , IMediator mediator
+            , INotificationHandler<DomainNotification> notifications) : base(notifications)
         {
+            _customerQueries = customerQueries;
             _mediator = mediator;
         }
+
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<ActionResult<List<CustomerDTO>>> Get()
         {
-            var customers = await _mediator.Send(new GetAllCustomersQuery());
-            return Ok(customers);
+            return ResponseGet(await _customerQueries.GetAllCustomers());
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateCustomerCommand command)
+        [ProducesResponseType(typeof(CreateCustomerResponse), (int)HttpStatusCode.Created)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+        public async Task<ActionResult<CreateCustomerResponse>> Create([FromBody] CreateCustomerCommand command)
         {
             var result = await _mediator.Send(command);
+
             if (!result.Success)
-                return BadRequest(result);
+            {
+                return ResponseError();
+            }
 
-            var prod = result.Data as CreateCustomerResponse;
-
-            return CreatedAtAction(nameof(Get), new { id = prod.Id }, prod);
+            var response = result as GenericCommandResult<CreateCustomerResponse>;
+            return ResponsePost(nameof(Get), new { id = response.Data.Id }, response.Data);
         }
     }
 }

@@ -1,7 +1,8 @@
 using CleanArchitecture.Domain.Commands.Requests.Product;
+using CleanArchitecture.Domain.Commons;
 using CleanArchitecture.Domain.Exceptions;
+using CleanArchitecture.Domain.Handlers.Notifications;
 using CleanArchitecture.Domain.Interfaces.Repositories.Context;
-using CleanArchitecture.Domain.Response;
 using MediatR;
 using System;
 using System.Threading;
@@ -12,22 +13,20 @@ namespace CleanArchitecture.Domain.Handlers.Product
     public class UpdateProductHandler : IRequestHandler<UpdateProductCommand, GenericCommandResult>
     {
         private readonly IUnitOfWorkContext _uow;
-        public UpdateProductHandler(IUnitOfWorkContext uow)
+        private readonly IDomainNotificationMediatorService _domainNotification;
+        public UpdateProductHandler(IUnitOfWorkContext uow, IDomainNotificationMediatorService domainNotification)
         {
             _uow = uow;
+            _domainNotification = domainNotification;
         }
         public async Task<GenericCommandResult> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
         {
-            request.Validate();
-            if (!request.IsValid)
-                return new GenericCommandResult(false, "Please, check:", request.Notifications);
-
             var product = await _uow.ProductRepository.GetById(request.Id);
 
             if (product is null)
             {
-                request.AddNotification("Error", "This product does not exist!");
-                return new GenericCommandResult(false, "Please, check:", request.Notifications);
+                _domainNotification.Notify(new Commons.DomainNotification("Error", "This product does not exist!"));
+                return new GenericCommandResult(false, "Invalid Request!");
             }
 
             product.ChangeName(request.Name);
@@ -37,9 +36,9 @@ namespace CleanArchitecture.Domain.Handlers.Product
 
             try
             {
-                var result = await _uow.ProductRepository.Update(product);
+                await _uow.ProductRepository.Update(product);
                 await _uow.Commit();
-                return new GenericCommandResult(true, "Product successfully updated!", result);
+                return new GenericCommandResult(true, "Product successfully updated!");
             }
             catch (Exception ex)
             {

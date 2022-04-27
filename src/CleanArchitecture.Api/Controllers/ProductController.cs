@@ -1,38 +1,46 @@
-using System;
-using System.Threading.Tasks;
+using CleanArchitecture.Domain.Commands.Requests.Product;
+using CleanArchitecture.Domain.Commons;
+using CleanArchitecture.Domain.DTO.Product;
+using CleanArchitecture.Domain.Interfaces.Queries;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Caching.Memory;
-using MediatR;
-using CleanArchitecture.Domain.Commands.Requests.Product;
-using CleanArchitecture.Domain.Queries.Requests.Product;
+using System;
 using System.Collections.Generic;
-using CleanArchitecture.Domain.Queries.Responses.Product;
+using System.Net;
+using System.Threading.Tasks;
 
 namespace CleanArchitecture.Api.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class ProductController : ControllerBase //ApiBaseController
+    public class ProductController : ApiBaseController
     {
+        private readonly IProductQueries _productQueries;
         private readonly IMediator _mediator;
         private readonly IMemoryCache _memoryCache;
         private const string PRODUCTS_KEY = "Products";
-        public ProductController(IMediator mediator, IMemoryCache memoryCache)
+        public ProductController(IProductQueries productQueries
+            , IMediator mediator
+            , IMemoryCache memoryCache
+            , INotificationHandler<DomainNotification> notifications) : base(notifications)
         {
             _memoryCache = memoryCache;
             _mediator = mediator;
+            _productQueries = productQueries;
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<GetProductByIdResponse>>> Get()
+        public async Task<ActionResult<List<ProductDTO>>> Get()
         {
-            if (_memoryCache.TryGetValue(PRODUCTS_KEY, out object productsObject))
+            if (_memoryCache.TryGetValue(PRODUCTS_KEY, out List<ProductDTO> productsObject))
             {
-                return Ok(productsObject);
+                return ResponseGet(productsObject);
             }
             else
             {
-                var products = await _mediator.Send(new GetAllProductsQuery());
+                var dapper = await _productQueries.DapperTeste();
+                var products = await _productQueries.GetAllProducts();
 
                 var memoryCacheEntryOptions = new MemoryCacheEntryOptions
                 {
@@ -42,52 +50,57 @@ namespace CleanArchitecture.Api.Controllers
 
                 _memoryCache.Set(PRODUCTS_KEY, products, memoryCacheEntryOptions);
 
-                return Ok(products);
+                return ResponseGet(products);
             }
         }
 
         [HttpGet]
         [Route("{id:Guid}")]
-        public async Task<IActionResult> Get(Guid id)
+        [ProducesResponseType(typeof(ProductDTO), (int)HttpStatusCode.OK)]
+        [ProducesResponseType((int)HttpStatusCode.NotFound)]
+        public async Task<ActionResult<ProductDTO>> Get(Guid id)
         {
-            var result = await _mediator.Send(new GetProductByIdQuery { Id = id });
-
-            if (!result.Success)
-                return NotFound(result);
-            return Ok(result.Data);
+            return ResponseGet(await _productQueries.GetProdutById(id));
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateProductCommand command)
+        [ProducesResponseType(typeof(CreateProductResponse), (int)HttpStatusCode.Created)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
+        public async Task<ActionResult<CreateProductResponse>> Create([FromBody] CreateProductCommand command)
         {
             var result = await _mediator.Send(command);
             if (!result.Success)
-                return BadRequest(result);
+                return ResponseError();
 
-            var prod = result.Data as CreateProductResponse;
+            var prod = result as GenericCommandResult<CreateProductResponse>;
 
-            return CreatedAtAction(nameof(Get), new { id = prod.Id }, prod);
+            return ResponsePost(nameof(Get), new { id = prod.Data.Id }, prod.Data);
         }
 
         [HttpDelete]
         [Route("{id:Guid}")]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> Delete(Guid id)
         {
             var result = await _mediator.Send(new DeleteProductCommand { Id = id });
 
             if (!result.Success)
-                return BadRequest(result);
-            return NoContent();
+                return ResponseError();
+
+            return ResponseDelete();
         }
 
         [HttpPut]
+        [ProducesResponseType((int)HttpStatusCode.NoContent)]
+        [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         public async Task<IActionResult> Update([FromBody] UpdateProductCommand command)
         {
             var result = await _mediator.Send(command);
             if (!result.Success)
-                return BadRequest(result);
+                return ResponseError();
 
-            return NoContent();
+            return ResponsePutPatch();
         }
     }
 }

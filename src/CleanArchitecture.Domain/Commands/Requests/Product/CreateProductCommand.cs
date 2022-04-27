@@ -1,18 +1,18 @@
-using System;
-using CleanArchitecture.Domain.Response;
+using CleanArchitecture.Domain.Commons;
 using Flunt.Notifications;
 using Flunt.Validations;
 using MediatR;
+using System;
 
 namespace CleanArchitecture.Domain.Commands.Requests.Product
 {
-    public class CreateProductCommand : Notifiable<Notification>, IRequest<GenericCommandResult>
+    public class CreateProductCommand : Validatable, IRequest<GenericCommandResult>
     {
         public string Name { get; set; }
         public string Brand { get; set; }
-        public Decimal Price { get; set; }
+        public decimal Price { get; set; }
 
-        public void Validate()
+        public override void Validate()
         {
             AddNotifications(new Contract<Notification>().Requires()
             .IsNotNullOrEmpty(Name, "Name", "The name can't be null or empty!")

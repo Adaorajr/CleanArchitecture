@@ -1,12 +1,11 @@
+using CleanArchitecture.Domain.Entities;
+using CleanArchitecture.Domain.Interfaces.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using CleanArchitecture.Domain.Entities;
-using CleanArchitecture.Domain.Interfaces.Repositories;
-using CleanArchitecture.Infra.Context;
-using Microsoft.EntityFrameworkCore;
 
 namespace CleanArchitecture.Infra.Repositories
 {
@@ -14,7 +13,7 @@ namespace CleanArchitecture.Infra.Repositories
         where TEntity : BaseEntity
         where TContext : DbContext
     {
-        private readonly TContext _context;
+        public readonly TContext _context;
         protected readonly DbSet<TEntity> _dbSet;
 
         public EntityRepository(TContext context)

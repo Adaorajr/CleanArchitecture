@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace CleanArchitecture.Domain.Queries.Responses.Customer
+namespace CleanArchitecture.Domain.DTO.Customer
 {
-    public class GetCustomersResponse
+    public class CustomerDTO
     {
         public Guid Id { get; set; }
         public string Name { get; set; }
