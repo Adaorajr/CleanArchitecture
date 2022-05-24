@@ -1,10 +1,13 @@
 using CleanArchitecture.Api.Middleware;
 using CleanArchitecture.Domain.Commons;
+using CleanArchitecture.Domain.Events.Customer;
 using CleanArchitecture.Domain.Handlers.Notifications;
+using CleanArchitecture.Domain.Interfaces.ExternalServices;
 using CleanArchitecture.Domain.Interfaces.Queries;
 using CleanArchitecture.Domain.Interfaces.Repositories;
 using CleanArchitecture.Domain.Interfaces.Repositories.Context;
 using CleanArchitecture.Domain.Interfaces.Repositories.ContextDois;
+using CleanArchitecture.Infra.ExternalServices;
 using CleanArchitecture.Infra.Queries;
 using CleanArchitecture.Infra.Repositories;
 using CleanArchitecture.Infra.Repositories.Context;
@@ -36,6 +39,10 @@ namespace CleanArchitecture.Api.Configurations
 
             services.AddScoped<IDomainNotificationMediatorService, DomainNotificationMediatorService>();
             services.AddScoped<INotificationHandler<DomainNotification>, DomainNotificationHandler>();
+            services.AddScoped<INotificationHandler<CreatedCustomerEvent>, CreatedCustomerHandler>();
+            #endregion
+            #region External Services
+            services.AddScoped<IEmailService, EmailService>();
             #endregion
         }
 

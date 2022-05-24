@@ -35,10 +35,10 @@ namespace CleanArchitecture.Api
             });
 
             services.AddDbContext<AppDataContext>(options =>
-            options.UseSqlite(Configuration.GetConnectionString("SqliteConString")));
+            options.UseSqlServer(Configuration.GetConnectionString("SqlServerConString")));
 
             services.AddDbContext<AppDataContextDois>(options =>
-            options.UseSqlite(Configuration.GetConnectionString("SqliteConStringDois")));
+            options.UseSqlServer(Configuration.GetConnectionString("SqlServerConStringDois")));
 
             services.AddMemoryCache();
 

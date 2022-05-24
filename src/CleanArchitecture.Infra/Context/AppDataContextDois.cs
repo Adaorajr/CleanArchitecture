@@ -17,15 +17,6 @@ namespace CleanArchitecture.Infra.Context
         {
             Configuration = configuration;
         }
-
-        protected override void OnConfiguring(DbContextOptionsBuilder options)
-        {
-            if (!options.IsConfigured)
-            {
-                options.UseSqlite(Configuration.GetConnectionString("SqliteConStringDois"));
-            }
-        }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

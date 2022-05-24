@@ -37,14 +37,14 @@ namespace CleanArchitecture.Api.Controllers
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
         public async Task<ActionResult<CreateCustomerResponse>> Create([FromBody] CreateCustomerCommand command)
         {
-            var result = await _mediator.Send(command);
+            GenericCommandResult result = await _mediator.Send(command);
 
             if (!result.Success)
             {
                 return ResponseError();
             }
 
-            var response = result as GenericCommandResult<CreateCustomerResponse>;
+            GenericCommandResult<CreateCustomerResponse> response = result as GenericCommandResult<CreateCustomerResponse>;
             return ResponsePost(nameof(Get), new { id = response.Data.Id }, response.Data);
         }
     }

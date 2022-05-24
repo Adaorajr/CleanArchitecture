@@ -1,3 +1,5 @@
+using System;
+
 namespace CleanArchitecture.Domain.Entities
 {
     public class Customer : BaseEntity

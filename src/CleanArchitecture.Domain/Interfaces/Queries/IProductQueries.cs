@@ -7,8 +7,7 @@ namespace CleanArchitecture.Domain.Interfaces.Queries
 {
     public interface IProductQueries
     {
-        Task<List<ProductDTO>> DapperTeste();
         Task<List<ProductDTO>> GetAllProducts();
-        Task<ProductDTO> GetProdutById(Guid id);
+        Task<ProductDTO> GetProdutById(int id);
     }
 }

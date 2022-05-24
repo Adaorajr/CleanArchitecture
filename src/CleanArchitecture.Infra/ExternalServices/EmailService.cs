@@ -7,9 +7,9 @@ namespace CleanArchitecture.Infra.ExternalServices
 {
     public class EmailService : IEmailService
     {
-        public Task Send(Email email)
+        public async Task Send(Email email)
         {
-            throw new NotImplementedException();
+            await Task.CompletedTask;
         }
     }
 }

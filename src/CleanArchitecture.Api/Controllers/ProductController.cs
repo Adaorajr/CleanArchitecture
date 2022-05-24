@@ -39,7 +39,6 @@ namespace CleanArchitecture.Api.Controllers
             }
             else
             {
-                var dapper = await _productQueries.DapperTeste();
                 var products = await _productQueries.GetAllProducts();
 
                 var memoryCacheEntryOptions = new MemoryCacheEntryOptions
@@ -58,7 +57,7 @@ namespace CleanArchitecture.Api.Controllers
         [Route("{id:Guid}")]
         [ProducesResponseType(typeof(ProductDTO), (int)HttpStatusCode.OK)]
         [ProducesResponseType((int)HttpStatusCode.NotFound)]
-        public async Task<ActionResult<ProductDTO>> Get(Guid id)
+        public async Task<ActionResult<ProductDTO>> Get(int id)
         {
             return ResponseGet(await _productQueries.GetProdutById(id));
         }
@@ -81,7 +80,7 @@ namespace CleanArchitecture.Api.Controllers
         [Route("{id:Guid}")]
         [ProducesResponseType((int)HttpStatusCode.NoContent)]
         [ProducesResponseType(typeof(ValidationProblemDetails), (int)HttpStatusCode.BadRequest)]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> Delete(int id)
         {
             var result = await _mediator.Send(new DeleteProductCommand { Id = id });
 

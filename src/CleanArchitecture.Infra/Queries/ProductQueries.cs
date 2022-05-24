@@ -18,7 +18,7 @@ namespace CleanArchitecture.Infra.Queries
             _productRepository = productRepository;
         }
 
-        public async Task<List<ProductDTO>> DapperTeste()
+        public async Task<List<ProductDTO>> GetAllProducts()
         {
             using var dapper = _productRepository.GetConnection();
 
@@ -26,23 +26,7 @@ namespace CleanArchitecture.Infra.Queries
             return (await dapper.QueryAsync<ProductDTO>(sql)).ToList();
         }
 
-        public async Task<List<ProductDTO>> GetAllProducts()
-        {
-            var result = await _productRepository.GetAll();
-
-            var response = result.Select(p =>
-            new ProductDTO(
-                p.Id.ToString(),
-                p.Name,
-                p.Brand,
-                p.Price,
-                p.CreatedAt.ToString(),
-                p.UpdatedAt.ToString())).ToList();
-
-            return response;
-        }
-
-        public async Task<ProductDTO> GetProdutById(Guid id)
+        public async Task<ProductDTO> GetProdutById(int id)
         {
             var result = await _productRepository.GetById(id);
 

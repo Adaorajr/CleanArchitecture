@@ -50,7 +50,7 @@ namespace CleanArchitecture.Infra.Repositories
             return await _dbSet.ToListAsync();
         }
 
-        public virtual async Task<TEntity> GetById(Guid id)
+        public virtual async Task<TEntity> GetById(int id)
         {
             var result = await _dbSet.FirstOrDefaultAsync(t => t.Id == id);
             return result;

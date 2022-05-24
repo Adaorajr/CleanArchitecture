@@ -13,7 +13,7 @@ namespace CleanArchitecture.Domain.Interfaces.Repositories
         Task<IEnumerable<TEntity>> CreateRange(IEnumerable<TEntity> entity);
         Task<TEntity> Update(TEntity entity);
         Task<IEnumerable<TEntity>> UpdateRange(IEnumerable<TEntity> entities);
-        Task<TEntity> GetById(Guid id);
+        Task<TEntity> GetById(int id);
         Task<IEnumerable<TEntity>> GetAll();
         Task Delete(TEntity entity);
         Task DeleteAll(IEnumerable<TEntity> entities);
